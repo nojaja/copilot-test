@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const { body, validationResult } = require('express-validator');
 const { Project, State, Transition, User } = require('../models');
 const { requireRole } = require('../middleware/auth');
@@ -27,7 +28,7 @@ router.get('/', async (req, res) => {
       const statesWithMissingData = await State.count({
         where: {
           projectId: project.id,
-          $or: [
+          [Op.or]: [
             { inputConditions: null },
             { inputConditions: '' },
             { outputResults: null },

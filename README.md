@@ -71,12 +71,9 @@ A collaborative web application for distributed business knowledge collection an
 
 3. **Database setup**
    ```bash
-   # Create PostgreSQL database
-   createdb process_flow_db
-   
-   # Copy environment file
-   cp server/.env.example server/.env
-   # Edit server/.env with your database credentials
+   ```bash
+   npm run setup:db
+   ```
    ```
 
 4. **Start development servers**
@@ -90,7 +87,13 @@ A collaborative web application for distributed business knowledge collection an
 
 ### Environment Variables
 
-Create `server/.env` file with:
+Copy the example environment file and configure:
+
+```bash
+cp server/.env.example server/.env
+```
+
+Update `server/.env` with your settings:
 
 ```env
 NODE_ENV=development
@@ -106,12 +109,50 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 ## Usage
 
-1. **Register/Login**: Create an account or sign in
+### Sample Data
+
+The setup script creates sample data for development testing:
+- **Demo User**: email `demo@example.com`, password `password123`
+- **Sample Project**: "Sample Process Flow" with example states and transitions
+
+### Getting Started
+
+1. **Register/Login**: Create an account or sign in with the demo account
 2. **Create Project**: Start a new process flow project
 3. **Add States**: Define process states with IN/OUT conditions
 4. **Collaborate**: Multiple users can add their knowledge
 5. **Review**: Check the process matrix and state diagram
 6. **Export**: Generate Markdown or CSV documentation
+
+## Docker Deployment
+
+For production deployment using Docker:
+
+```bash
+# Start with Docker Compose
+docker-compose up -d
+
+# The application will be available at http://localhost:3000
+```
+
+## Development Commands
+
+```bash
+# Install all dependencies
+npm run install:all
+
+# Setup database with sample data
+npm run setup:db
+
+# Start development servers
+npm run dev
+
+# Run tests
+npm test
+
+# Build for production
+npm run build
+```
 
 ## API Endpoints
 
