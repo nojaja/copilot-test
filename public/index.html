@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copilot Test App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Copilot Test App</h1>
+            <p>シンプルなNode.js + Express.jsアプリケーション</p>
+        </header>
+
+        <main>
+            <section class="api-test">
+                <h2>API テスト</h2>
+                <button id="hello-btn" class="btn">Hello API を呼び出し</button>
+                <div id="hello-result" class="result"></div>
+            </section>
+
+            <section class="echo-test">
+                <h2>Echo テスト</h2>
+                <div class="form-group">
+                    <label for="echo-input">メッセージを入力:</label>
+                    <input type="text" id="echo-input" placeholder="テストメッセージを入力してください">
+                    <button id="echo-btn" class="btn">送信</button>
+                </div>
+                <div id="echo-result" class="result"></div>
+            </section>
+
+            <section class="info">
+                <h2>アプリ情報</h2>
+                <ul>
+                    <li>Node.js + Express.js で作成</li>
+                    <li>静的ファイル配信</li>
+                    <li>REST API エンドポイント</li>
+                    <li>JSON データの送受信</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Copilot Test App</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
