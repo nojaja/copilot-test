@@ -29,5 +29,5 @@ RUN mkdir -p uploads
 # Expose port
 EXPOSE 3000
 
-# Start server
-CMD ["npm", "start"]
+# Start server with DB readiness wait
+CMD ["sh", "-c", "node scripts/wait-for-db.js && npm start"]

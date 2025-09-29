@@ -26,12 +26,14 @@ const io = new Server(server, {
   }
 });
 
-// Security middleware
-app.use(helmet());
+
+// CORSミドルウェアを最優先で適用
 app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:8080",
   credentials: true
 }));
+// Security middleware
+app.use(helmet());
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

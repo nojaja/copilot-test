@@ -105,7 +105,7 @@ export default createStore({
     async login({ commit }, credentials) {
       try {
         commit('SET_LOADING', true)
-        const response = await axios.post('/auth/login', credentials)
+        const response = await axios.post('/auth/login', credentials, { withCredentials: true })
         commit('SET_AUTH', response.data)
         commit('SET_ERROR', null)
         return response.data

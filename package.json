@@ -13,10 +13,20 @@
     "setup:db": "cd server && npm run setup",
     "test": "cd server && npm test"
   },
-  "keywords": ["process-management", "workflow", "collaboration", "vue", "node"],
+  "keywords": [
+    "process-management",
+    "workflow",
+    "collaboration",
+    "vue",
+    "node"
+  ],
   "author": "nojaja",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
   }
 }

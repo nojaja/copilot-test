@@ -12,14 +12,17 @@ async function setupDatabase() {
     await sequelize.sync({ force: process.env.NODE_ENV === 'development' });
     console.log('✅ Database models synchronized');
 
+
     // Create sample data for development
     if (process.env.NODE_ENV === 'development') {
       console.log('Creating sample data...');
-      
+
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash('password123', 12);
       const sampleUser = await User.create({
         name: 'Demo User',
         email: 'demo@example.com',
-        password: '$2a$12$LFgGCqE9Jjs5I0X8z.RhXef9b9pqAh4.YGh9gXYW5qD0G4yD6WnuK', // password123
+        password: hashedPassword, // password123
         department: 'Demo Department',
         role: 'admin'
       });
@@ -61,6 +64,20 @@ async function setupDatabase() {
 
       console.log('✅ Sample data created');
       console.log(`Demo login: demo@example.com / password123`);
+
+      // ここから登録データの確認
+      console.log('--- 登録データ確認 ---');
+      const users = await User.findAll();
+      const projects = await Project.findAll();
+      const states = await State.findAll();
+      const transitions = await Transition.findAll();
+      // コメントはサンプル作成していないので省略
+
+      console.log('【User】', users.map(u => u.toJSON()));
+      console.log('【Project】', projects.map(p => p.toJSON()));
+      console.log('【State】', states.map(s => s.toJSON()));
+      console.log('【Transition】', transitions.map(t => t.toJSON()));
+      console.log('--- 登録データ確認ここまで ---');
     }
 
     console.log('🎉 Database setup completed successfully!');

@@ -102,6 +102,10 @@ DATABASE_URL=postgresql://username:password@localhost:5432/process_flow_db
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 CLIENT_URL=http://localhost:8080
 
+# NOTE: If DATABASE_URL is omitted, the app now falls back to
+# postgresql://postgres:postgres@localhost:5432/process_flow_db
+# (added to avoid pg password type errors). Set DATABASE_URL explicitly in production.
+
 # Optional: Google OAuth
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
@@ -134,6 +138,13 @@ docker-compose up -d
 
 # The application will be available at http://localhost:3000
 ```
+
+### Docker 補足事項
+
+- 初回ビルド時にフロントエンド(Vue)の本番ビルドで ESLint 設定が必須となるため `.eslintrc.cjs` を `client/` 直下に追加済みです。
+- `app` コンテナ起動時に Postgres が受け付け可能になるまでの短時間で接続拒否が発生していたため、`server/scripts/wait-for-db.js` を追加し `Dockerfile` の `CMD` を `node scripts/wait-for-db.js && npm start` に変更しています。
+- これによりアプリは DB 接続が確立してから起動し安定します。
+- 既存コンテナ/イメージを更新したい場合は `docker-compose up -d --build` を実行してください。
 
 ## Development Commands
 
