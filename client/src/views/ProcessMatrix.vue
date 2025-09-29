@@ -3,20 +3,23 @@
     <div class="container-fluid mt-4">
       <div class="row mb-4">
         <div class="col">
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-start">
             <div>
               <h1 class="h3 mb-1">Process Matrix</h1>
               <p class="text-muted mb-0">State transitions and IN/OUT overview</p>
             </div>
-            <div class="btn-group">
-              <button class="btn btn-outline-success">
-                <i class="fas fa-download me-1"></i>
-                Export CSV
-              </button>
-              <button class="btn btn-outline-primary">
-                <i class="fas fa-file-export me-1"></i>
-                Export Markdown
-              </button>
+            <div class="d-flex flex-column align-items-end">
+              <StateHeaderButtons :projectId="$route.params.id" />
+              <div class="btn-group mt-2">
+                <button class="btn btn-outline-success">
+                  <i class="fas fa-download me-1"></i>
+                  Export CSV
+                </button>
+                <button class="btn btn-outline-primary">
+                  <i class="fas fa-file-export me-1"></i>
+                  Export Markdown
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -85,10 +88,15 @@
 </template>
 
 <script>
+
 import { mapGetters, mapActions } from 'vuex'
+import StateHeaderButtons from '../components/StateHeaderButtons.vue'
 
 export default {
   name: 'ProcessMatrix',
+  components: {
+    StateHeaderButtons
+  },
   computed: {
     ...mapGetters(['projectStates'])
   },

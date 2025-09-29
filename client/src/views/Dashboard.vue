@@ -141,7 +141,7 @@
                       <td>
                         <div class="btn-group btn-group-sm">
                           <router-link
-                            :to="`/project/${project.id}`"
+                            :to="`/project/${project.id}/states`"
                             class="btn btn-outline-primary btn-sm"
                           >
                             <i class="fas fa-eye"></i>

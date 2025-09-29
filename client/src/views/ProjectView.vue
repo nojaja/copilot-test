@@ -16,29 +16,7 @@
                 <h1 class="h3 mb-1">{{ currentProject.name }}</h1>
                 <p class="text-muted mb-0">{{ currentProject.description || 'No description' }}</p>
               </div>
-              <div class="btn-group">
-                <router-link
-                  :to="`/project/${currentProject.id}/state/new`"
-                  class="btn btn-primary"
-                >
-                  <i class="fas fa-plus me-1"></i>
-                  Add State
-                </router-link>
-                <router-link
-                  :to="`/project/${currentProject.id}/matrix`"
-                  class="btn btn-outline-info"
-                >
-                  <i class="fas fa-table me-1"></i>
-                  Matrix View
-                </router-link>
-                <router-link
-                  :to="`/project/${currentProject.id}/diagram`"
-                  class="btn btn-outline-success"
-                >
-                  <i class="fas fa-project-diagram me-1"></i>
-                  Diagram
-                </router-link>
-              </div>
+              <StateHeaderButtons :projectId="currentProject.id" />
             </div>
           </div>
         </div>
@@ -46,6 +24,15 @@
         <!-- States List -->
         <div class="row">
           <div class="col">
+            <div class="d-flex justify-content-end mb-2">
+              <router-link
+                :to="`/project/${currentProject.id}/state/new`"
+                class="btn btn-primary"
+              >
+                <i class="fas fa-plus me-1"></i>
+                Add State
+              </router-link>
+            </div>
             <div class="card">
               <div class="card-header">
                 <h5 class="mb-0">
@@ -58,7 +45,7 @@
                   <i class="fas fa-plus-circle fa-3x mb-3"></i>
                   <p>No states defined yet. Add the first state to get started!</p>
                   <router-link
-                    :to="`/project/${currentProject.id}/state/new`"
+                    :to="`/project/${currentProject.id}/states`"
                     class="btn btn-primary"
                   >
                     Add First State
@@ -117,10 +104,15 @@
 </template>
 
 <script>
+
 import { mapState, mapGetters, mapActions } from 'vuex'
+import StateHeaderButtons from '../components/StateHeaderButtons.vue'
 
 export default {
   name: 'ProjectView',
+  components: {
+    StateHeaderButtons
+  },
   computed: {
     ...mapState(['loading', 'error']),
     ...mapGetters(['currentProject', 'projectStates'])

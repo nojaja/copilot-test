@@ -3,20 +3,23 @@
     <div class="container-fluid mt-4">
       <div class="row mb-4">
         <div class="col">
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-start">
             <div>
               <h1 class="h3 mb-1">State Transition Diagram</h1>
               <p class="text-muted mb-0">Visual representation of process flow</p>
             </div>
-            <div class="btn-group">
-              <button class="btn btn-outline-secondary">
-                <i class="fas fa-expand-arrows-alt me-1"></i>
-                Fit to Screen
-              </button>
-              <button class="btn btn-outline-info">
-                <i class="fas fa-download me-1"></i>
-                Export Image
-              </button>
+            <div class="d-flex flex-column align-items-end">
+              <StateHeaderButtons :projectId="$route.params.id" />
+              <div class="btn-group mt-2">
+                <button class="btn btn-outline-secondary">
+                  <i class="fas fa-expand-arrows-alt me-1"></i>
+                  Fit to Screen
+                </button>
+                <button class="btn btn-outline-info">
+                  <i class="fas fa-download me-1"></i>
+                  Export Image
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -42,11 +45,16 @@
 </template>
 
 <script>
+
 import { mapGetters, mapActions } from 'vuex'
 import mermaid from 'mermaid'
+import StateHeaderButtons from '../components/StateHeaderButtons.vue'
 
 export default {
   name: 'StateTransitionDiagram',
+  components: {
+    StateHeaderButtons
+  },
   data() {
     return {
       renderTimeout: null,

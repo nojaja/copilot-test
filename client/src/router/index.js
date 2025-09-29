@@ -7,6 +7,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import ProjectView from '../views/ProjectView.vue'
 import StateEdit from '../views/StateEdit.vue'
+import StatesView from '../views/StatesView.vue'
 import ProcessMatrix from '../views/ProcessMatrix.vue'
 import StateTransitionDiagram from '../views/StateTransitionDiagram.vue'
 
@@ -29,8 +30,21 @@ const routes = [
   },
   {
     path: '/project/:id',
+    redirect: to => {
+      return `/project/${to.params.id}/states`
+    },
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/project/:id/states',
     name: 'ProjectView',
     component: ProjectView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/project/:id/states',
+    name: 'StatesView',
+    component: StatesView,
     meta: { requiresAuth: true }
   },
   {
