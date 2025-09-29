@@ -23,10 +23,15 @@ export default {
     // Check if user is already logged in
     const token = localStorage.getItem('token')
     const user = localStorage.getItem('user')
-    
     if (token && user) {
       this.$store.commit('SET_AUTH', { token, user: JSON.parse(user) })
       this.$http.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      // 画面がproject/:id/diagramならfetchProjectを即時実行
+      const m = this.$route.path.match(/^\/project\/(\d+)\/diagram/)
+      if (m && m[1]) {
+        // 認証復元後にプロジェクトデータを取得
+        await this.$store.dispatch('fetchProject', m[1])
+      }
     }
   }
 }

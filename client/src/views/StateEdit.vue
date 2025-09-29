@@ -22,7 +22,6 @@
                     required
                   >
                 </div>
-
                 <div class="mb-3">
                   <label for="description" class="form-label">Description</label>
                   <textarea
@@ -87,8 +86,11 @@
   </div>
 </template>
 
+
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+
+
 
 export default {
   name: 'StateEdit',
@@ -106,6 +108,22 @@ export default {
   computed: {
     isNew() {
       return this.$route.params.id === 'new' || !this.$route.params.id
+    },
+    ...mapGetters(['projectStates'])
+  },
+  created() {
+    // 編集時は既存データをformにセット
+    if (!this.isNew) {
+      const state = this.projectStates.find(s => String(s.id) === String(this.$route.params.id))
+      if (state) {
+        this.form = {
+          name: state.name || '',
+          description: state.description || '',
+          department: state.department || '',
+          inputConditions: state.inputConditions || '',
+          outputResults: state.outputResults || ''
+        }
+      }
     }
   },
   methods: {
@@ -113,7 +131,6 @@ export default {
     async saveState() {
       try {
         const projectId = this.$route.params.projectId
-        
         if (this.isNew) {
           await this.createState({
             ...this.form,
@@ -125,7 +142,6 @@ export default {
             data: this.form
           })
         }
-        
         this.$router.push(`/project/${projectId}`)
       } catch (error) {
         // Error handled by store

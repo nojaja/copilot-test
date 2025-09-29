@@ -85,14 +85,27 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'ProcessMatrix',
   computed: {
     ...mapGetters(['projectStates'])
   },
+  watch: {
+    '$route.params.id': {
+      immediate: true,
+      handler(newId) {
+        if (newId) this.fetchProject(newId)
+      }
+    }
+  },
+  mounted() {
+    const id = this.$route.params.id
+    if (id) this.fetchProject(id)
+  },
   methods: {
+    ...mapActions(['fetchProject']),
     getStatusClass(status) {
       switch (status) {
         case 'approved': return 'bg-success'
