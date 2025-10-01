@@ -9,6 +9,7 @@ export default createStore({
     currentProject: null,
     states: [],
     transitions: [],
+    ioTerms: [],
     loading: false,
     error: null
   },
@@ -19,7 +20,8 @@ export default createStore({
     allProjects: state => state.projects,
     currentProject: state => state.currentProject,
     projectStates: state => state.states,
-    projectTransitions: state => state.transitions
+    projectTransitions: state => state.transitions,
+    ioTerms: state => state.ioTerms
   },
   
   mutations: {
@@ -98,6 +100,19 @@ export default createStore({
     
     REMOVE_TRANSITION(state, transitionId) {
       state.transitions = state.transitions.filter(t => t.id !== transitionId)
+    },
+
+    SET_IO_TERMS(state, terms) {
+      state.ioTerms = terms
+    },
+
+    UPSERT_IO_TERM(state, term) {
+      const index = state.ioTerms.findIndex(item => item.id === term.id)
+      if (index === -1) {
+        state.ioTerms.push(term)
+      } else {
+        state.ioTerms.splice(index, 1, term)
+      }
     }
   },
   
@@ -196,6 +211,23 @@ export default createStore({
       }
     },
 
+    async fetchIOTerms({ commit }, params = {}) {
+      try {
+        const response = await axios.get('/io-terms', { params })
+        commit('SET_IO_TERMS', response.data)
+        commit('SET_ERROR', null)
+        return response.data
+      } catch (error) {
+        commit('SET_ERROR', error.response?.data?.error || 'Failed to fetch IO terms')
+        throw error
+      }
+    },
+
+    async fetchIOTerm(_, id) {
+      const response = await axios.get(`/io-terms/${id}`)
+      return response.data
+    },
+
     async searchIOTerms(_, { query, limit = 20 }) {
       const response = await axios.get('/io-terms', {
         params: {
@@ -209,6 +241,7 @@ export default createStore({
     async createIOTerm({ commit }, payload) {
       try {
         const response = await axios.post('/io-terms', payload)
+        commit('UPSERT_IO_TERM', response.data)
         commit('SET_ERROR', null)
         return response.data
       } catch (error) {
@@ -220,6 +253,7 @@ export default createStore({
     async updateIOTerm({ commit }, { id, data }) {
       try {
         const response = await axios.put(`/io-terms/${id}`, data)
+        commit('UPSERT_IO_TERM', response.data)
         commit('SET_ERROR', null)
         return response.data
       } catch (error) {

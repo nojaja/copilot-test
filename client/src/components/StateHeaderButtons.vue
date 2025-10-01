@@ -10,6 +10,15 @@
       State View
     </router-link>
     <router-link
+      :to="`/project/${projectId}/deliverables`"
+      class="btn"
+      :class="deliverablesBtnClass"
+      exact
+    >
+      <i class="fas fa-clipboard-list me-1" />
+      Deliverables
+    </router-link>
+    <router-link
       :to="`/project/${projectId}/matrix`"
       class="btn"
       :class="matrixBtnClass"
@@ -43,6 +52,10 @@ export default {
     stateBtnClass() {
       const isActive = this.$route.path === `/project/${this.projectId}/states`
       return isActive ? 'btn-primary' : 'btn-outline-primary'
+    },
+    deliverablesBtnClass() {
+      const isActive = this.$route.path === `/project/${this.projectId}/deliverables`
+      return isActive ? 'btn-secondary' : 'btn-outline-secondary'
     },
     matrixBtnClass() {
       const isActive = this.$route.path === `/project/${this.projectId}/matrix`

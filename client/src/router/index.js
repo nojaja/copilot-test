@@ -7,9 +7,10 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import ProjectView from '../views/ProjectView.vue'
 import StateEdit from '../views/StateEdit.vue'
-import StatesView from '../views/StatesView.vue'
+import DeliverablesView from '../views/DeliverablesView.vue'
 import ProcessMatrix from '../views/ProcessMatrix.vue'
 import StateTransitionDiagram from '../views/StateTransitionDiagram.vue'
+import IOTermEdit from '../views/IOTermEdit.vue'
 
 const routes = [
   {
@@ -42,15 +43,21 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/project/:id/states',
-    name: 'StatesView',
-    component: StatesView,
+    path: '/project/:id/deliverables',
+    name: 'DeliverablesView',
+    component: DeliverablesView,
     meta: { requiresAuth: true }
   },
   {
     path: '/project/:projectId/state/:id?',
     name: 'StateEdit',
     component: StateEdit,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/project/:id/io-term/:ioTermId?',
+    name: 'IOTermEdit',
+    component: IOTermEdit,
     meta: { requiresAuth: true }
   },
   {
