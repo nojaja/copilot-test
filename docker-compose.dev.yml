@@ -11,7 +11,7 @@ services:
       - "5433:5432"
 
   app:
-    build: .
+    build: ./server
     ports:
       - "3000:3000"
     environment:
@@ -42,7 +42,7 @@ services:
     tty: true
 
   setup-db:
-    build: .
+    build: ./server
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://root:postgres@db:5432/process_flow_db

@@ -4,11 +4,11 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Install server dependencies
-COPY server/package*.json ./
+COPY package*.json ./
 RUN npm ci --only=production
 
 # Copy server code
-COPY server/ ./
+COPY . .
 
 # Create uploads directory
 RUN mkdir -p uploads

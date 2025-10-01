@@ -6,9 +6,20 @@ module.exports = defineConfig({
     port: 8080,
     host: '0.0.0.0', // Docker環境でのバインディング用
     allowedHosts: 'all',
-    webSocketServer: false, // WebSocketサーバーを無効化してエラーを回避
+    // webSocketServer: false,  // ← 無効化していたがHMR用途で必要なため削除
     client: {
-      webSocketURL: 'auto://0.0.0.0:0/ws' // WebSocketのURLを自動設定
+      // ブラウザへ配信するHMR用WebSocket URLを固定
+      // auto だとコンテナ内部IP (172.x.x.x) を使い失敗するケースがあるため localhost に強制
+      webSocketURL: {
+        hostname: 'localhost',
+        pathname: '/ws',
+        port: 8080,
+        protocol: 'ws'
+      },
+      overlay: {
+        errors: true,
+        warnings: false
+      }
     },
     proxy: {
       '/api': {
