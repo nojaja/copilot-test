@@ -8,7 +8,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   app:
     build: .
@@ -17,7 +17,7 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://root:postgres@db:5432/process_flow_db
-      JWT_SECRET: your-production-secret-key
+      JWT_SECRET: your-development-secret-key
       CLIENT_URL: http://localhost:8080
     depends_on:
       - db
@@ -31,12 +31,30 @@ services:
     ports:
       - "8080:8080"
     environment:
-      VUE_APP_API_URL: http://localhost:3000
+      VUE_APP_API_URL: http://localhost:3000/api
+      NODE_ENV: development
     volumes:
       - ./client:/app
       - /app/node_modules
     depends_on:
       - app
+    stdin_open: true
+    tty: true
+
+  setup-db:
+    build: .
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://root:postgres@db:5432/process_flow_db
+      JWT_SECRET: your-development-secret-key
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    command: node scripts/setup-db.js
+    profiles:
+      - setup
 
 volumes:
   postgres_data:

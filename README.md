@@ -130,21 +130,88 @@ The setup script creates sample data for development testing:
 
 ## Docker Deployment
 
-For production deployment using Docker:
+### 開発環境（クライアント・サーバー分離）
+
+クライアント側とサーバー側が独立したコンテナとして起動します：
 
 ```bash
-# Start with Docker Compose
+# 開発環境での起動（ホットリロード対応）
+docker-compose -f docker-compose.dev.yml up -d
+
+# データベース初期化・サンプルデータ作成（任意のタイミングで実行）
+docker-compose -f docker-compose.dev.yml --profile setup run --rm setup-db
+
+# サービス確認
+# - Frontend: http://localhost:8081 (Vue.js開発サーバー)
+# - Backend API: http://localhost:3001
+# - Database: localhost:5433
+```
+
+### 本番環境
+
+```bash
+# 本番環境での起動
 docker-compose up -d
 
-# The application will be available at http://localhost:3000
+# サービス確認
+# - Frontend: http://localhost:8080 (Vue.js開発サーバー)
+# - Backend API: http://localhost:3000
+# - Database: localhost:5432
 ```
+
+### Docker設定概要
+
+#### 開発環境 (`docker-compose.dev.yml`)
+- **client**: Vue.js開発サーバー（ホットリロード対応）
+- **app**: Node.js APIサーバー（開発モード）
+- **db**: PostgreSQLデータベース
+- **setup-db**: データベース初期化・サンプルデータ作成（プロファイル: `setup`）
+
+#### 本番環境 (`docker-compose.yml`)
+- **client**: Vue.js開発サーバー（独立コンテナ）
+- **app**: Node.js APIサーバー（本番モード）
+- **db**: PostgreSQLデータベース
 
 ### Docker 補足事項
 
-- 初回ビルド時にフロントエンド(Vue)の本番ビルドで ESLint 設定が必須となるため `.eslintrc.cjs` を `client/` 直下に追加済みです。
+- クライアント側もコンテナ化され、フロントエンドとバックエンドが独立して動作します
+- 開発環境ではボリュームマウントによりホットリロードが有効です
 - `app` コンテナ起動時に Postgres が受け付け可能になるまでの短時間で接続拒否が発生していたため、`server/scripts/wait-for-db.js` を追加し `Dockerfile` の `CMD` を `node scripts/wait-for-db.js && npm start` に変更しています。
 - これによりアプリは DB 接続が確立してから起動し安定します。
 - 既存コンテナ/イメージを更新したい場合は `docker-compose up -d --build` を実行してください。
+
+### データベース初期化について
+
+`setup-db`コンテナを使用して、任意のタイミングでデータベースの初期化とサンプルデータの作成が可能です：
+
+```bash
+# データベース初期化・サンプルデータ作成
+docker-compose -f docker-compose.dev.yml --profile setup run --rm setup-db
+
+# 作成されるサンプルデータ:
+# - デモユーザー: demo@example.com / password123
+# - サンプルプロジェクト: "Sample Process Flow" と "Request-to-Answer サンプル"
+# - 各プロジェクトの状態遷移定義とBPMN準拠のフロー例
+```
+
+### Docker コマンド集
+
+```bash
+# 開発環境起動
+docker-compose -f docker-compose.dev.yml up -d
+
+# ログ確認
+docker-compose -f docker-compose.dev.yml logs -f [サービス名]
+
+# 停止
+docker-compose -f docker-compose.dev.yml down
+
+# 完全リセット（ボリューム削除含む）
+docker-compose -f docker-compose.dev.yml down -v
+
+# コンテナ再ビルド
+docker-compose -f docker-compose.dev.yml up -d --build
+```
 
 ## Development Commands
 
