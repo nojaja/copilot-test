@@ -6,36 +6,48 @@
           <div class="card shadow">
             <div class="card-body p-4">
               <div class="text-center mb-4">
-                <i class="fas fa-project-diagram fa-3x text-primary mb-3"></i>
+                <i class="fas fa-project-diagram fa-3x text-primary mb-3" />
                 <h2>Process Flow Manager</h2>
-                <p class="text-muted">Sign in to your account</p>
+                <p class="text-muted">
+                  Sign in to your account
+                </p>
               </div>
 
-              <div v-if="error" class="alert alert-danger" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
+              <div
+                v-if="error"
+                class="alert alert-danger"
+                role="alert"
+              >
+                <i class="fas fa-exclamation-triangle me-2" />
                 {{ error }}
               </div>
 
               <form @submit.prevent="handleLogin">
                 <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
+                  <label
+                    for="email"
+                    class="form-label"
+                  >Email</label>
                   <input
-                    type="email"
-                    class="form-control"
                     id="email"
                     v-model="form.email"
+                    type="email"
+                    class="form-control"
                     required
                     :disabled="loading"
                   >
                 </div>
 
                 <div class="mb-3">
-                  <label for="password" class="form-label">Password</label>
+                  <label
+                    for="password"
+                    class="form-label"
+                  >Password</label>
                   <input
-                    type="password"
-                    class="form-control"
                     id="password"
                     v-model="form.password"
+                    type="password"
+                    class="form-control"
                     required
                     :disabled="loading"
                   >
@@ -46,8 +58,14 @@
                   class="btn btn-primary w-100 mb-3"
                   :disabled="loading"
                 >
-                  <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                  <i v-else class="fas fa-sign-in-alt me-2"></i>
+                  <span
+                    v-if="loading"
+                    class="spinner-border spinner-border-sm me-2"
+                  />
+                  <i
+                    v-else
+                    class="fas fa-sign-in-alt me-2"
+                  />
                   Sign In
                 </button>
               </form>
@@ -55,7 +73,10 @@
               <div class="text-center">
                 <p class="mb-0">
                   Don't have an account?
-                  <router-link to="/register" class="text-decoration-none">
+                  <router-link
+                    to="/register"
+                    class="text-decoration-none"
+                  >
                     Sign up here
                   </router-link>
                 </p>

@@ -6,11 +6,18 @@
         <div class="col">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h1 class="h3 mb-1">Dashboard</h1>
-              <p class="text-muted mb-0">Manage your process flow projects</p>
+              <h1 class="h3 mb-1">
+                Dashboard
+              </h1>
+              <p class="text-muted mb-0">
+                Manage your process flow projects
+              </p>
             </div>
-            <button class="btn btn-primary" @click="showCreateModal = true">
-              <i class="fas fa-plus me-2"></i>
+            <button
+              class="btn btn-primary"
+              @click="showCreateModal = true"
+            >
+              <i class="fas fa-plus me-2" />
               New Project
             </button>
           </div>
@@ -24,10 +31,14 @@
             <div class="card-body">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h4 class="mb-1">{{ projects.length }}</h4>
-                  <p class="mb-0">Total Projects</p>
+                  <h4 class="mb-1">
+                    {{ projects.length }}
+                  </h4>
+                  <p class="mb-0">
+                    Total Projects
+                  </p>
                 </div>
-                <i class="fas fa-project-diagram fa-2x opacity-75"></i>
+                <i class="fas fa-project-diagram fa-2x opacity-75" />
               </div>
             </div>
           </div>
@@ -37,10 +48,14 @@
             <div class="card-body">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h4 class="mb-1">{{ activeProjects }}</h4>
-                  <p class="mb-0">Active Projects</p>
+                  <h4 class="mb-1">
+                    {{ activeProjects }}
+                  </h4>
+                  <p class="mb-0">
+                    Active Projects
+                  </p>
                 </div>
-                <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                <i class="fas fa-check-circle fa-2x opacity-75" />
               </div>
             </div>
           </div>
@@ -50,10 +65,14 @@
             <div class="card-body">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h4 class="mb-1">{{ averageCompletion }}%</h4>
-                  <p class="mb-0">Avg Completion</p>
+                  <h4 class="mb-1">
+                    {{ averageCompletion }}%
+                  </h4>
+                  <p class="mb-0">
+                    Avg Completion
+                  </p>
                 </div>
-                <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                <i class="fas fa-chart-line fa-2x opacity-75" />
               </div>
             </div>
           </div>
@@ -63,10 +82,14 @@
             <div class="card-body">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h4 class="mb-1">{{ totalStates }}</h4>
-                  <p class="mb-0">Total States</p>
+                  <h4 class="mb-1">
+                    {{ totalStates }}
+                  </h4>
+                  <p class="mb-0">
+                    Total States
+                  </p>
                 </div>
-                <i class="fas fa-sitemap fa-2x opacity-75"></i>
+                <i class="fas fa-sitemap fa-2x opacity-75" />
               </div>
             </div>
           </div>
@@ -79,21 +102,33 @@
           <div class="card">
             <div class="card-header">
               <h5 class="mb-0">
-                <i class="fas fa-list me-2"></i>
+                <i class="fas fa-list me-2" />
                 Projects
               </h5>
             </div>
             <div class="card-body p-0">
-              <div v-if="loading" class="text-center p-4">
-                <div class="spinner-border text-primary" role="status">
+              <div
+                v-if="loading"
+                class="text-center p-4"
+              >
+                <div
+                  class="spinner-border text-primary"
+                  role="status"
+                >
                   <span class="visually-hidden">Loading...</span>
                 </div>
               </div>
-              <div v-else-if="projects.length === 0" class="text-center p-4 text-muted">
-                <i class="fas fa-folder-open fa-3x mb-3"></i>
+              <div
+                v-else-if="projects.length === 0"
+                class="text-center p-4 text-muted"
+              >
+                <i class="fas fa-folder-open fa-3x mb-3" />
                 <p>No projects found. Create your first project to get started!</p>
               </div>
-              <div v-else class="table-responsive">
+              <div
+                v-else
+                class="table-responsive"
+              >
                 <table class="table table-hover mb-0">
                   <thead class="table-light">
                     <tr>
@@ -107,7 +142,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="project in projects" :key="project.id">
+                    <tr
+                      v-for="project in projects"
+                      :key="project.id"
+                    >
                       <td>
                         <div>
                           <strong>{{ project.name }}</strong>
@@ -122,7 +160,10 @@
                         </span>
                       </td>
                       <td>
-                        <div class="progress" style="height: 20px;">
+                        <div
+                          class="progress"
+                          style="height: 20px;"
+                        >
                           <div
                             class="progress-bar"
                             :class="getProgressBarClass(project.statistics?.completionRate)"
@@ -133,7 +174,10 @@
                         </div>
                       </td>
                       <td>
-                        <span class="badge" :class="getStatusClass(project.status)">
+                        <span
+                          class="badge"
+                          :class="getStatusClass(project.status)"
+                        >
                           {{ project.status }}
                         </span>
                       </td>
@@ -144,19 +188,19 @@
                             :to="`/project/${project.id}/states`"
                             class="btn btn-outline-primary btn-sm"
                           >
-                            <i class="fas fa-eye"></i>
+                            <i class="fas fa-eye" />
                           </router-link>
                           <router-link
                             :to="`/project/${project.id}/matrix`"
                             class="btn btn-outline-info btn-sm"
                           >
-                            <i class="fas fa-table"></i>
+                            <i class="fas fa-table" />
                           </router-link>
                           <router-link
                             :to="`/project/${project.id}/diagram`"
                             class="btn btn-outline-success btn-sm"
                           >
-                            <i class="fas fa-project-diagram"></i>
+                            <i class="fas fa-project-diagram" />
                           </router-link>
                         </div>
                       </td>
@@ -180,36 +224,56 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Create New Project</h5>
-            <button type="button" class="btn-close" @click="showCreateModal = false"></button>
+            <h5 class="modal-title">
+              Create New Project
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              @click="showCreateModal = false"
+            />
           </div>
           <form @submit.prevent="createProject">
             <div class="modal-body">
               <div class="mb-3">
-                <label for="projectName" class="form-label">Project Name *</label>
+                <label
+                  for="projectName"
+                  class="form-label"
+                >Project Name *</label>
                 <input
-                  type="text"
-                  class="form-control"
                   id="projectName"
                   v-model="newProject.name"
+                  type="text"
+                  class="form-control"
                   required
                 >
               </div>
               <div class="mb-3">
-                <label for="projectDescription" class="form-label">Description</label>
+                <label
+                  for="projectDescription"
+                  class="form-label"
+                >Description</label>
                 <textarea
-                  class="form-control"
                   id="projectDescription"
-                  rows="3"
                   v-model="newProject.description"
-                ></textarea>
+                  class="form-control"
+                  rows="3"
+                />
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" @click="showCreateModal = false">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="showCreateModal = false"
+              >
                 Cancel
               </button>
-              <button type="submit" class="btn btn-primary" :disabled="!newProject.name">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="!newProject.name"
+              >
                 Create Project
               </button>
             </div>
@@ -217,7 +281,10 @@
         </div>
       </div>
     </div>
-    <div v-if="showCreateModal" class="modal-backdrop fade show"></div>
+    <div
+      v-if="showCreateModal"
+      class="modal-backdrop fade show"
+    />
   </div>
 </template>
 

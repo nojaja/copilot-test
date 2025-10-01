@@ -3,6 +3,8 @@ const Project = require('./Project');
 const State = require('./State');
 const Transition = require('./Transition');
 const Comment = require('./Comment');
+const StateIOTerm = require('./StateIOTerm');
+const StateIOLink = require('./StateIOLink');
 
 // User associations
 User.hasMany(Project, { foreignKey: 'createdBy', as: 'createdProjects' });
@@ -30,6 +32,41 @@ State.hasMany(Comment, {
   scope: { targetType: 'state' }
 });
 
+State.belongsToMany(StateIOTerm, {
+  through: {
+    model: StateIOLink,
+    unique: false,
+    scope: { usageType: 'input' }
+  },
+  foreignKey: 'stateId',
+  otherKey: 'ioTermId',
+  as: 'inputTerms'
+});
+
+State.belongsToMany(StateIOTerm, {
+  through: {
+    model: StateIOLink,
+    unique: false,
+    scope: { usageType: 'output' }
+  },
+  foreignKey: 'stateId',
+  otherKey: 'ioTermId',
+  as: 'outputTerms'
+});
+
+StateIOTerm.belongsToMany(State, {
+  through: {
+    model: StateIOLink,
+    unique: false
+  },
+  foreignKey: 'ioTermId',
+  otherKey: 'stateId',
+  as: 'states'
+});
+
+StateIOLink.belongsTo(State, { foreignKey: 'stateId', as: 'state' });
+StateIOLink.belongsTo(StateIOTerm, { foreignKey: 'ioTermId', as: 'term' });
+
 // Transition associations
 Transition.belongsTo(State, { foreignKey: 'fromStateId', as: 'fromState' });
 Transition.belongsTo(State, { foreignKey: 'toStateId', as: 'toState' });
@@ -53,5 +90,7 @@ module.exports = {
   Project,
   State,
   Transition,
-  Comment
+  Comment,
+  StateIOTerm,
+  StateIOLink
 };

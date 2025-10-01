@@ -6,6 +6,7 @@ A collaborative web application for distributed business knowledge collection an
 
 - **User Management & Authentication**: Login/register with role-based permissions
 - **Process Flow Input**: Define states with IN/OUT conditions and descriptions
+- **Reusable IN/OUT Master**: Link state outputs to downstream inputs via a shared suggestions-based IO term catalog
 - **Collaborative Editing**: Multiple departments can contribute their knowledge
 - **Real-time Updates**: Socket.io integration for live collaboration
 - **Validation & Conflict Detection**: Automatic checking for missing data and duplicates
@@ -118,12 +119,13 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 The setup script creates sample data for development testing:
 - **Demo User**: email `demo@example.com`, password `password123`
 - **Sample Project**: "Sample Process Flow" with example states and transitions
+- **Reusable IO Terms**: Shared IN/OUT terms seeded so that one state's OUT feeds the next state's IN
 
 ### Getting Started
 
 1. **Register/Login**: Create an account or sign in with the demo account
 2. **Create Project**: Start a new process flow project
-3. **Add States**: Define process states with IN/OUT conditions
+3. **Add States**: Define process states and attach IN/OUT terms from the shared master (or create new ones on the fly)
 4. **Collaborate**: Multiple users can add their knowledge
 5. **Review**: Check the process matrix and state diagram
 6. **Export**: Generate Markdown or CSV documentation
@@ -250,6 +252,11 @@ npm run build
 - `POST /api/states` - Create new state
 - `PUT /api/states/:id` - Update state
 - `DELETE /api/states/:id` - Delete state
+
+### IO Terms
+- `GET /api/io-terms` - Search shared IN/OUT terms (supports `search` and `limit` query params)
+- `POST /api/io-terms` - Create a new reusable IO term
+- `PUT /api/io-terms/:id` - Update an existing IO term
 
 ### Export
 - `GET /api/export/markdown/:projectId` - Export as Markdown

@@ -13,6 +13,7 @@ const stateRoutes = require('./routes/states');
 const transitionRoutes = require('./routes/transitions');
 const commentRoutes = require('./routes/comments');
 const exportRoutes = require('./routes/export');
+const ioTermRoutes = require('./routes/ioTerms');
 
 const { authenticateToken } = require('./middleware/auth');
 const { sequelize } = require('./config/database');
@@ -50,6 +51,7 @@ app.use('/api/states', authenticateToken, stateRoutes);
 app.use('/api/transitions', authenticateToken, transitionRoutes);
 app.use('/api/comments', authenticateToken, commentRoutes);
 app.use('/api/export', authenticateToken, exportRoutes);
+app.use('/api/io-terms', authenticateToken, ioTermRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -1,8 +1,14 @@
 <template>
   <div class="project-view">
     <div class="container-fluid mt-4">
-      <div v-if="loading" class="text-center">
-        <div class="spinner-border text-primary" role="status">
+      <div
+        v-if="loading"
+        class="text-center"
+      >
+        <div
+          class="spinner-border text-primary"
+          role="status"
+        >
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -13,10 +19,14 @@
           <div class="col">
             <div class="d-flex justify-content-between align-items-start">
               <div>
-                <h1 class="h3 mb-1">{{ currentProject.name }}</h1>
-                <p class="text-muted mb-0">{{ currentProject.description || 'No description' }}</p>
+                <h1 class="h3 mb-1">
+                  {{ currentProject.name }}
+                </h1>
+                <p class="text-muted mb-0">
+                  {{ currentProject.description || 'No description' }}
+                </p>
               </div>
-              <StateHeaderButtons :projectId="currentProject.id" />
+              <StateHeaderButtons :project-id="currentProject.id" />
             </div>
           </div>
         </div>
@@ -29,20 +39,23 @@
                 :to="`/project/${currentProject.id}/state/new`"
                 class="btn btn-primary"
               >
-                <i class="fas fa-plus me-1"></i>
+                <i class="fas fa-plus me-1" />
                 Add State
               </router-link>
             </div>
             <div class="card">
               <div class="card-header">
                 <h5 class="mb-0">
-                  <i class="fas fa-sitemap me-2"></i>
+                  <i class="fas fa-sitemap me-2" />
                   States ({{ projectStates.length }})
                 </h5>
               </div>
               <div class="card-body p-0">
-                <div v-if="projectStates.length === 0" class="text-center p-4 text-muted">
-                  <i class="fas fa-plus-circle fa-3x mb-3"></i>
+                <div
+                  v-if="projectStates.length === 0"
+                  class="text-center p-4 text-muted"
+                >
+                  <i class="fas fa-plus-circle fa-3x mb-3" />
                   <p>No states defined yet. Add the first state to get started!</p>
                   <router-link
                     :to="`/project/${currentProject.id}/states`"
@@ -51,13 +64,25 @@
                     Add First State
                   </router-link>
                 </div>
-                <div v-else class="row g-3 p-3">
-                  <div v-for="state in projectStates" :key="state.id" class="col-md-6 col-lg-4">
+                <div
+                  v-else
+                  class="row g-3 p-3"
+                >
+                  <div
+                    v-for="state in projectStates"
+                    :key="state.id"
+                    class="col-md-6 col-lg-4"
+                  >
                     <div class="card h-100 state-card">
                       <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                          <h6 class="card-title mb-0">{{ state.name }}</h6>
-                          <span class="badge" :class="getStatusClass(state.status)">
+                          <h6 class="card-title mb-0">
+                            {{ state.name }}
+                          </h6>
+                          <span
+                            class="badge"
+                            :class="getStatusClass(state.status)"
+                          >
                             {{ state.status }}
                           </span>
                         </div>
@@ -66,7 +91,7 @@
                         </p>
                         <div class="mb-2">
                           <small class="text-muted">
-                            <i class="fas fa-user me-1"></i>
+                            <i class="fas fa-user me-1" />
                             {{ state.owner?.name }}
                             <span v-if="state.department">({{ state.department }})</span>
                           </small>
@@ -74,20 +99,26 @@
                         <div class="d-flex justify-content-between align-items-center">
                           <div>
                             <small class="text-muted">
-                              <i class="fas fa-sign-in-alt me-1" :class="{ 'text-danger': !state.inputConditions }"></i>
-                              IN: {{ state.inputConditions ? 'Complete' : 'Missing' }}
+                              <i
+                                class="fas fa-sign-in-alt me-1"
+                                :class="{ 'text-danger': !(state.inputTerms && state.inputTerms.length) }"
+                              />
+                              IN: {{ state.inputTerms && state.inputTerms.length ? state.inputTerms.length + ' linked' : 'Missing' }}
                             </small>
                             <br>
                             <small class="text-muted">
-                              <i class="fas fa-sign-out-alt me-1" :class="{ 'text-danger': !state.outputResults }"></i>
-                              OUT: {{ state.outputResults ? 'Complete' : 'Missing' }}
+                              <i
+                                class="fas fa-sign-out-alt me-1"
+                                :class="{ 'text-danger': !(state.outputTerms && state.outputTerms.length) }"
+                              />
+                              OUT: {{ state.outputTerms && state.outputTerms.length ? state.outputTerms.length + ' linked' : 'Missing' }}
                             </small>
                           </div>
                           <router-link
                             :to="`/project/${currentProject.id}/state/${state.id}`"
                             class="btn btn-sm btn-outline-primary"
                           >
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit" />
                           </router-link>
                         </div>
                       </div>

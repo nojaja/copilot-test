@@ -1,10 +1,35 @@
 const express = require('express');
 const { Op } = require('sequelize');
 const { body, validationResult } = require('express-validator');
-const { Project, State, Transition, User } = require('../models');
+const { Project, State, Transition, User, StateIOTerm } = require('../models');
 const { requireRole } = require('../middleware/auth');
 
 const router = express.Router();
+
+const formatTerms = (terms = []) => terms
+  .map(term => {
+    const through = term.StateIOLink || term.state_io_links || term.stateIoLink;
+    const json = term.toJSON ? term.toJSON() : term;
+    const sanitized = { ...json };
+    delete sanitized.StateIOLink;
+    delete sanitized.state_io_links;
+    delete sanitized.stateIoLink;
+    return {
+      ...sanitized,
+      order: through?.order ?? 0
+    };
+  })
+  .sort((a, b) => a.order - b.order);
+
+const formatState = (state) => {
+  if (!state) return state;
+  const json = state.toJSON ? state.toJSON() : state;
+  return {
+    ...json,
+    inputTerms: formatTerms(json.inputTerms || []),
+    outputTerms: formatTerms(json.outputTerms || [])
+  };
+};
 
 // Get all projects for user
 router.get('/', async (req, res) => {
@@ -73,6 +98,16 @@ router.get('/:id', async (req, res) => {
               model: User,
               as: 'owner',
               attributes: ['id', 'name', 'email']
+            },
+            {
+              model: StateIOTerm,
+              as: 'inputTerms',
+              through: { attributes: ['order'] }
+            },
+            {
+              model: StateIOTerm,
+              as: 'outputTerms',
+              through: { attributes: ['order'] }
             }
           ]
         },
@@ -99,7 +134,9 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    res.json(project);
+    const formattedProject = project.toJSON();
+    formattedProject.states = (project.states || []).map(formatState);
+    res.json(formattedProject);
   } catch (error) {
     console.error('Error fetching project:', error);
     res.status(500).json({ error: 'Failed to fetch project' });

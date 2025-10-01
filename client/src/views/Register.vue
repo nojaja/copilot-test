@@ -6,64 +6,84 @@
           <div class="card shadow">
             <div class="card-body p-4">
               <div class="text-center mb-4">
-                <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                <i class="fas fa-user-plus fa-3x text-primary mb-3" />
                 <h2>Create Account</h2>
-                <p class="text-muted">Join Process Flow Manager</p>
+                <p class="text-muted">
+                  Join Process Flow Manager
+                </p>
               </div>
 
-              <div v-if="error" class="alert alert-danger" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
+              <div
+                v-if="error"
+                class="alert alert-danger"
+                role="alert"
+              >
+                <i class="fas fa-exclamation-triangle me-2" />
                 {{ error }}
               </div>
 
               <form @submit.prevent="handleRegister">
                 <div class="mb-3">
-                  <label for="name" class="form-label">Full Name *</label>
+                  <label
+                    for="name"
+                    class="form-label"
+                  >Full Name *</label>
                   <input
-                    type="text"
-                    class="form-control"
                     id="name"
                     v-model="form.name"
-                    required
-                    :disabled="loading"
-                  >
-                </div>
-
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email *</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="email"
-                    v-model="form.email"
-                    required
-                    :disabled="loading"
-                  >
-                </div>
-
-                <div class="mb-3">
-                  <label for="department" class="form-label">Department</label>
-                  <input
                     type="text"
                     class="form-control"
-                    id="department"
-                    v-model="form.department"
+                    required
                     :disabled="loading"
                   >
                 </div>
 
                 <div class="mb-3">
-                  <label for="password" class="form-label">Password *</label>
+                  <label
+                    for="email"
+                    class="form-label"
+                  >Email *</label>
                   <input
-                    type="password"
+                    id="email"
+                    v-model="form.email"
+                    type="email"
                     class="form-control"
+                    required
+                    :disabled="loading"
+                  >
+                </div>
+
+                <div class="mb-3">
+                  <label
+                    for="department"
+                    class="form-label"
+                  >Department</label>
+                  <input
+                    id="department"
+                    v-model="form.department"
+                    type="text"
+                    class="form-control"
+                    :disabled="loading"
+                  >
+                </div>
+
+                <div class="mb-3">
+                  <label
+                    for="password"
+                    class="form-label"
+                  >Password *</label>
+                  <input
                     id="password"
                     v-model="form.password"
+                    type="password"
+                    class="form-control"
                     required
                     minlength="6"
                     :disabled="loading"
                   >
-                  <div class="form-text">Minimum 6 characters</div>
+                  <div class="form-text">
+                    Minimum 6 characters
+                  </div>
                 </div>
 
                 <button
@@ -71,8 +91,14 @@
                   class="btn btn-primary w-100 mb-3"
                   :disabled="loading"
                 >
-                  <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                  <i v-else class="fas fa-user-plus me-2"></i>
+                  <span
+                    v-if="loading"
+                    class="spinner-border spinner-border-sm me-2"
+                  />
+                  <i
+                    v-else
+                    class="fas fa-user-plus me-2"
+                  />
                   Create Account
                 </button>
               </form>
@@ -80,7 +106,10 @@
               <div class="text-center">
                 <p class="mb-0">
                   Already have an account?
-                  <router-link to="/login" class="text-decoration-none">
+                  <router-link
+                    to="/login"
+                    class="text-decoration-none"
+                  >
                     Sign in here
                   </router-link>
                 </p>

@@ -5,18 +5,22 @@
         <div class="col">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <h1 class="h3 mb-1">Process Matrix</h1>
-              <p class="text-muted mb-0">State transitions and IN/OUT overview</p>
+              <h1 class="h3 mb-1">
+                Process Matrix
+              </h1>
+              <p class="text-muted mb-0">
+                State transitions and IN/OUT overview
+              </p>
             </div>
             <div class="d-flex flex-column align-items-end">
-              <StateHeaderButtons :projectId="$route.params.id" />
+              <StateHeaderButtons :project-id="$route.params.id" />
               <div class="btn-group mt-2">
                 <button class="btn btn-outline-success">
-                  <i class="fas fa-download me-1"></i>
+                  <i class="fas fa-download me-1" />
                   Export CSV
                 </button>
                 <button class="btn btn-outline-primary">
-                  <i class="fas fa-file-export me-1"></i>
+                  <i class="fas fa-file-export me-1" />
                   Export Markdown
                 </button>
               </div>
@@ -41,7 +45,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="state in projectStates" :key="state.id">
+                    <tr
+                      v-for="state in projectStates"
+                      :key="state.id"
+                    >
                       <td>
                         <strong>{{ state.name }}</strong>
                         <br>
@@ -53,25 +60,64 @@
                         <small class="text-muted">{{ state.department }}</small>
                       </td>
                       <td>
-                        <div v-if="state.inputConditions" class="text-success">
+                        <div
+                          v-if="state.inputTerms && state.inputTerms.length"
+                          class="d-flex flex-wrap gap-2"
+                        >
+                          <span
+                            v-for="term in state.inputTerms"
+                            :key="term.id"
+                            class="badge rounded-pill bg-success"
+                          >
+                            {{ term.label }}
+                          </span>
+                        </div>
+                        <div
+                          v-else-if="state.inputConditions"
+                          class="text-success"
+                        >
                           {{ state.inputConditions }}
                         </div>
-                        <div v-else class="text-danger">
-                          <i class="fas fa-exclamation-triangle me-1"></i>
+                        <div
+                          v-else
+                          class="text-danger"
+                        >
+                          <i class="fas fa-exclamation-triangle me-1" />
                           Missing input conditions
                         </div>
                       </td>
                       <td>
-                        <div v-if="state.outputResults" class="text-success">
+                        <div
+                          v-if="state.outputTerms && state.outputTerms.length"
+                          class="d-flex flex-wrap gap-2"
+                        >
+                          <span
+                            v-for="term in state.outputTerms"
+                            :key="term.id"
+                            class="badge rounded-pill bg-info"
+                          >
+                            {{ term.label }}
+                          </span>
+                        </div>
+                        <div
+                          v-else-if="state.outputResults"
+                          class="text-success"
+                        >
                           {{ state.outputResults }}
                         </div>
-                        <div v-else class="text-danger">
-                          <i class="fas fa-exclamation-triangle me-1"></i>
+                        <div
+                          v-else
+                          class="text-danger"
+                        >
+                          <i class="fas fa-exclamation-triangle me-1" />
                           Missing output results
                         </div>
                       </td>
                       <td>
-                        <span class="badge" :class="getStatusClass(state.status)">
+                        <span
+                          class="badge"
+                          :class="getStatusClass(state.status)"
+                        >
                           {{ state.status }}
                         </span>
                       </td>

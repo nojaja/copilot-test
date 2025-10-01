@@ -1,29 +1,51 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/">
-        <i class="fas fa-project-diagram me-2"></i>
+      <router-link
+        class="navbar-brand"
+        to="/"
+      >
+        <i class="fas fa-project-diagram me-2" />
         Process Flow Manager
       </router-link>
       
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
+        <span class="navbar-toggler-icon" />
       </button>
       
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div
+        id="navbarNav"
+        class="collapse navbar-collapse"
+      >
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <router-link class="nav-link" to="/">
-              <i class="fas fa-dashboard me-1"></i>
+            <router-link
+              class="nav-link"
+              to="/"
+            >
+              <i class="fas fa-dashboard me-1" />
               Dashboard
             </router-link>
           </li>
         </ul>
         
         <ul class="navbar-nav">
-          <li class="nav-item dropdown" v-if="currentUser">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fas fa-user-circle me-1"></i>
+          <li
+            v-if="currentUser"
+            class="nav-item dropdown"
+          >
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+            >
+              <i class="fas fa-user-circle me-1" />
               {{ currentUser.name }}
             </a>
             <ul class="dropdown-menu">
@@ -35,8 +57,12 @@
               </li>
               <li><hr class="dropdown-divider"></li>
               <li>
-                <a class="dropdown-item" href="#" @click="logout">
-                  <i class="fas fa-sign-out-alt me-1"></i>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  @click="logout"
+                >
+                  <i class="fas fa-sign-out-alt me-1" />
                   Logout
                 </a>
               </li>

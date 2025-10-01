@@ -194,6 +194,38 @@ export default createStore({
         commit('SET_ERROR', error.response?.data?.error || 'Failed to update state')
         throw error
       }
+    },
+
+    async searchIOTerms(_, { query, limit = 20 }) {
+      const response = await axios.get('/io-terms', {
+        params: {
+          search: query,
+          limit
+        }
+      })
+      return response.data
+    },
+
+    async createIOTerm({ commit }, payload) {
+      try {
+        const response = await axios.post('/io-terms', payload)
+        commit('SET_ERROR', null)
+        return response.data
+      } catch (error) {
+        commit('SET_ERROR', error.response?.data?.error || 'Failed to create IO term')
+        throw error
+      }
+    },
+
+    async updateIOTerm({ commit }, { id, data }) {
+      try {
+        const response = await axios.put(`/io-terms/${id}`, data)
+        commit('SET_ERROR', null)
+        return response.data
+      } catch (error) {
+        commit('SET_ERROR', error.response?.data?.error || 'Failed to update IO term')
+        throw error
+      }
     }
   }
 })

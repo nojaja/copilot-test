@@ -1,10 +1,39 @@
 const express = require('express');
 const { Op } = require('sequelize');
 const { body, validationResult } = require('express-validator');
-const { State, User, Project, Transition } = require('../models');
+const { State, User, Project, Transition, StateIOTerm } = require('../models');
 const { requireProjectAccess } = require('../middleware/auth');
+const { sequelize } = require('../config/database');
+const { syncStateTerms, recalculateStateAggregations } = require('../services/stateIoService');
 
 const router = express.Router();
+
+const formatTerms = (terms = []) => {
+  return terms
+    .map(term => {
+      const through = term.StateIOLink || term.state_io_links || term.stateIoLink;
+      const json = term.toJSON ? term.toJSON() : term;
+      const sanitized = { ...json };
+      delete sanitized.StateIOLink;
+      delete sanitized.state_io_links;
+      delete sanitized.stateIoLink;
+      return {
+        ...sanitized,
+        order: through?.order ?? 0
+      };
+    })
+    .sort((a, b) => a.order - b.order);
+};
+
+const formatStateResponse = (state) => {
+  if (!state) return state;
+  const json = state.toJSON ? state.toJSON() : state;
+  return {
+    ...json,
+    inputTerms: formatTerms(json.inputTerms),
+    outputTerms: formatTerms(json.outputTerms)
+  };
+};
 
 // Get states for a project
 router.get('/project/:projectId', requireProjectAccess, async (req, res) => {
@@ -39,12 +68,22 @@ router.get('/project/:projectId', requireProjectAccess, async (req, res) => {
           model: User,
           as: 'lastModifier',
           attributes: ['id', 'name', 'email']
+        },
+        {
+          model: StateIOTerm,
+          as: 'inputTerms',
+          through: { attributes: ['order'] }
+        },
+        {
+          model: StateIOTerm,
+          as: 'outputTerms',
+          through: { attributes: ['order'] }
         }
       ],
       order: [['updatedAt', 'DESC']]
     });
 
-    res.json(states);
+    res.json(states.map(formatStateResponse));
   } catch (error) {
     console.error('Error fetching states:', error);
     res.status(500).json({ error: 'Failed to fetch states' });
@@ -87,6 +126,16 @@ router.get('/:id', async (req, res) => {
               attributes: ['id', 'name']
             }
           ]
+        },
+        {
+          model: StateIOTerm,
+          as: 'inputTerms',
+          through: { attributes: ['order'] }
+        },
+        {
+          model: StateIOTerm,
+          as: 'outputTerms',
+          through: { attributes: ['order'] }
         }
       ]
     });
@@ -95,7 +144,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'State not found' });
     }
 
-    res.json(state);
+  res.json(formatStateResponse(state));
   } catch (error) {
     console.error('Error fetching state:', error);
     res.status(500).json({ error: 'Failed to fetch state' });
@@ -109,7 +158,11 @@ router.post('/', [
   body('description').optional().trim(),
   body('inputConditions').optional().trim(),
   body('outputResults').optional().trim(),
-  body('department').optional().trim()
+  body('department').optional().trim(),
+  body('inputTermIds').optional().isArray(),
+  body('inputTermIds.*').isUUID().withMessage('Each inputTermId must be a valid UUID'),
+  body('outputTermIds').optional().isArray(),
+  body('outputTermIds.*').isUUID().withMessage('Each outputTermId must be a valid UUID')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -117,50 +170,90 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, projectId, description, inputConditions, outputResults, department, tags, position } = req.body;
-
-    // Check if state name already exists in project
-    const existingState = await State.findOne({
-      where: { name, projectId }
-    });
-
-    if (existingState) {
-      return res.status(400).json({ error: 'State with this name already exists in the project' });
-    }
-
-    // Verify project exists
-    const project = await Project.findByPk(projectId);
-    if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
-
-    const state = await State.create({
+    const {
       name,
       projectId,
       description,
       inputConditions,
       outputResults,
-      department: department || req.user.department,
-      tags: tags || [],
-      position: position || { x: 0, y: 0 },
-      ownerId: req.user.id,
-      lastModifiedBy: req.user.id
+      department,
+      tags,
+      position,
+      inputTermIds,
+      outputTermIds
+    } = req.body;
+
+    const createdState = await sequelize.transaction(async (transaction) => {
+      const existingState = await State.findOne({
+        where: { name, projectId },
+        transaction
+      });
+
+      if (existingState) {
+        const error = new Error('State with this name already exists in the project');
+        error.status = 400;
+        throw error;
+      }
+
+      const project = await Project.findByPk(projectId, { transaction });
+      if (!project) {
+        const error = new Error('Project not found');
+        error.status = 404;
+        throw error;
+      }
+
+      const state = await State.create({
+        name,
+        projectId,
+        description,
+        inputConditions: Array.isArray(inputTermIds) ? '' : inputConditions,
+        outputResults: Array.isArray(outputTermIds) ? '' : outputResults,
+        department: department || req.user.department,
+        tags: tags || [],
+        position: position || { x: 0, y: 0 },
+        ownerId: req.user.id,
+        lastModifiedBy: req.user.id
+      }, { transaction });
+
+      await syncStateTerms(state, { inputTermIds, outputTermIds }, { transaction });
+
+      if (Array.isArray(inputTermIds) || Array.isArray(outputTermIds)) {
+        await recalculateStateAggregations([state.id], { transaction });
+      }
+
+      return state;
     });
 
-    const stateWithOwner = await State.findByPk(state.id, {
+    const stateWithRelations = await State.findByPk(createdState.id, {
       include: [
         {
           model: User,
           as: 'owner',
           attributes: ['id', 'name', 'email', 'department']
+        },
+        {
+          model: User,
+          as: 'lastModifier',
+          attributes: ['id', 'name', 'email']
+        },
+        {
+          model: StateIOTerm,
+          as: 'inputTerms',
+          through: { attributes: ['order'] }
+        },
+        {
+          model: StateIOTerm,
+          as: 'outputTerms',
+          through: { attributes: ['order'] }
         }
       ]
     });
 
-    res.status(201).json(stateWithOwner);
+    res.status(201).json(formatStateResponse(stateWithRelations));
   } catch (error) {
     console.error('Error creating state:', error);
-    res.status(500).json({ error: 'Failed to create state' });
+    const status = error.status || 500;
+    res.status(status).json({ error: error.status ? error.message : 'Failed to create state' });
   }
 });
 
@@ -169,7 +262,11 @@ router.put('/:id', [
   body('name').optional().trim().isLength({ min: 1, max: 255 }),
   body('description').optional().trim(),
   body('inputConditions').optional().trim(),
-  body('outputResults').optional().trim()
+  body('outputResults').optional().trim(),
+  body('inputTermIds').optional().isArray(),
+  body('inputTermIds.*').isUUID().withMessage('Each inputTermId must be a valid UUID'),
+  body('outputTermIds').optional().isArray(),
+  body('outputTermIds.*').isUUID().withMessage('Each outputTermId must be a valid UUID')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -204,9 +301,52 @@ router.put('/:id', [
       }
     }
 
-    await state.update({
-      ...req.body,
-      lastModifiedBy: req.user.id
+    const {
+      name,
+      description,
+      inputConditions,
+      outputResults,
+      department,
+      tags,
+      position,
+      status,
+      inputTermIds,
+      outputTermIds
+    } = req.body;
+
+    await sequelize.transaction(async (transaction) => {
+      const stateForUpdate = await State.findByPk(state.id, {
+        transaction,
+        lock: transaction.LOCK.UPDATE
+      });
+
+      const updatePayload = { lastModifiedBy: req.user.id };
+
+      if (name !== undefined) updatePayload.name = name;
+      if (description !== undefined) updatePayload.description = description;
+      if (department !== undefined) updatePayload.department = department;
+      if (Array.isArray(tags)) updatePayload.tags = tags;
+      if (position !== undefined) updatePayload.position = position;
+      if (status !== undefined) updatePayload.status = status;
+
+      if (Array.isArray(inputTermIds)) {
+        updatePayload.inputConditions = '';
+      } else if (inputConditions !== undefined) {
+        updatePayload.inputConditions = inputConditions;
+      }
+
+      if (Array.isArray(outputTermIds)) {
+        updatePayload.outputResults = '';
+      } else if (outputResults !== undefined) {
+        updatePayload.outputResults = outputResults;
+      }
+
+      await stateForUpdate.update(updatePayload, { transaction });
+
+      if (Array.isArray(inputTermIds) || Array.isArray(outputTermIds)) {
+        await syncStateTerms(stateForUpdate, { inputTermIds, outputTermIds }, { transaction });
+        await recalculateStateAggregations([stateForUpdate.id], { transaction });
+      }
     });
 
     const updatedState = await State.findByPk(state.id, {
@@ -220,14 +360,25 @@ router.put('/:id', [
           model: User,
           as: 'lastModifier',
           attributes: ['id', 'name', 'email']
+        },
+        {
+          model: StateIOTerm,
+          as: 'inputTerms',
+          through: { attributes: ['order'] }
+        },
+        {
+          model: StateIOTerm,
+          as: 'outputTerms',
+          through: { attributes: ['order'] }
         }
       ]
     });
 
-    res.json(updatedState);
+    res.json(formatStateResponse(updatedState));
   } catch (error) {
     console.error('Error updating state:', error);
-    res.status(500).json({ error: 'Failed to update state' });
+    const status = error.status || 500;
+    res.status(status).json({ error: error.status ? error.message : 'Failed to update state' });
   }
 });
 

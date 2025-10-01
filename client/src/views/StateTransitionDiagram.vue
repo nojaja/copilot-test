@@ -5,18 +5,22 @@
         <div class="col">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <h1 class="h3 mb-1">State Transition Diagram</h1>
-              <p class="text-muted mb-0">Visual representation of process flow</p>
+              <h1 class="h3 mb-1">
+                State Transition Diagram
+              </h1>
+              <p class="text-muted mb-0">
+                Visual representation of process flow
+              </p>
             </div>
             <div class="d-flex flex-column align-items-end">
-              <StateHeaderButtons :projectId="$route.params.id" />
+              <StateHeaderButtons :project-id="$route.params.id" />
               <div class="btn-group mt-2">
                 <button class="btn btn-outline-secondary">
-                  <i class="fas fa-expand-arrows-alt me-1"></i>
+                  <i class="fas fa-expand-arrows-alt me-1" />
                   Fit to Screen
                 </button>
                 <button class="btn btn-outline-info">
-                  <i class="fas fa-download me-1"></i>
+                  <i class="fas fa-download me-1" />
                   Export Image
                 </button>
               </div>
@@ -29,11 +33,16 @@
         <div class="col">
           <div class="card">
             <div class="card-body">
-              <div id="diagram-container" class="diagram-container">
+              <div
+                id="diagram-container"
+                class="diagram-container"
+              >
                 <div class="text-center text-muted py-5">
-                  <i class="fas fa-project-diagram fa-3x mb-3"></i>
+                  <i class="fas fa-project-diagram fa-3x mb-3" />
                   <p>Diagram will be rendered here using Mermaid.js</p>
-                  <p class="small">This feature will show the complete state transition flow</p>
+                  <p class="small">
+                    This feature will show the complete state transition flow
+                  </p>
                 </div>
               </div>
             </div>

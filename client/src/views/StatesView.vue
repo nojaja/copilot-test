@@ -5,16 +5,20 @@
         <div class="col">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h1 class="h3 mb-1">States</h1>
-              <p class="text-muted mb-0">State list and management</p>
+              <h1 class="h3 mb-1">
+                States
+              </h1>
+              <p class="text-muted mb-0">
+                State list and management
+              </p>
             </div>
             <div class="d-flex align-items-center gap-2">
-              <StateHeaderButtons :projectId="$route.params.id" />
+              <StateHeaderButtons :project-id="$route.params.id" />
               <router-link
                 :to="`/project/${$route.params.id}/state/new`"
                 class="btn btn-primary ms-2"
               >
-                <i class="fas fa-plus me-1"></i>
+                <i class="fas fa-plus me-1" />
                 Add State
               </router-link>
             </div>

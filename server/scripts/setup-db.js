@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { sequelize } = require('../config/database');
-const { User, Project, State, Transition, Comment } = require('../models');
+const { User, Project, State, Transition, Comment, StateIOTerm } = require('../models');
+const { syncStateTerms, recalculateStateAggregations } = require('../services/stateIoService');
 
 async function setupDatabase() {
   try {
@@ -27,6 +28,18 @@ async function setupDatabase() {
         role: 'admin'
       });
 
+      const ensureTerm = async (label, description = '') => {
+        const [term] = await StateIOTerm.findOrCreate({
+          where: { label },
+          defaults: {
+            description,
+            createdBy: sampleUser.id,
+            updatedBy: sampleUser.id
+          }
+        });
+        return term;
+      };
+
       const sampleProject = await Project.create({
         name: 'Sample Process Flow',
         description: 'A demonstration project showing the process flow management capabilities',
@@ -39,8 +52,8 @@ async function setupDatabase() {
         projectId: sampleProject.id,
         ownerId: sampleUser.id,
         department: 'Demo Department',
-        inputConditions: 'System startup, user authentication completed',
-        outputResults: 'User session established, welcome dashboard displayed'
+        inputConditions: '',
+        outputResults: ''
       });
 
       const state2 = await State.create({
@@ -49,9 +62,28 @@ async function setupDatabase() {
         projectId: sampleProject.id,
         ownerId: sampleUser.id,
         department: 'Demo Department',
-        inputConditions: 'Valid user input received, system resources available',
-        outputResults: 'Process completed, results generated'
+        inputConditions: '',
+        outputResults: ''
       });
+
+      const systemStartup = await ensureTerm('System startup completed');
+      const userAuthenticated = await ensureTerm('User authenticated');
+      const sessionEstablished = await ensureTerm('User session established');
+      const processingResources = await ensureTerm('Processing resources available');
+      const processingCompleted = await ensureTerm('Processing completed');
+      const resultsGenerated = await ensureTerm('Results generated');
+
+      await syncStateTerms(state1, {
+        inputTermIds: [systemStartup.id, userAuthenticated.id],
+        outputTermIds: [sessionEstablished.id, processingResources.id]
+      });
+
+      await syncStateTerms(state2, {
+        inputTermIds: [sessionEstablished.id, processingResources.id],
+        outputTermIds: [processingCompleted.id, resultsGenerated.id]
+      });
+
+      await recalculateStateAggregations([state1.id, state2.id]);
 
       await Transition.create({
         fromStateId: state1.id,
@@ -77,8 +109,8 @@ async function setupDatabase() {
           projectId: rtaProject.id,
           ownerId: sampleUser.id,
           department: 'カスタマーサポート',
-          inputConditions: '問い合わせフォーム送信',
-          outputResults: 'リクエスト受付記録、受付担当者へ通知',
+          inputConditions: '',
+          outputResults: '',
           diagramMeta: JSON.stringify({ x: 100, y: 200, color: '#2196f3', label: 'Requested', type: 'start' })
         }),
         State.create({
@@ -87,8 +119,8 @@ async function setupDatabase() {
           projectId: rtaProject.id,
           ownerId: sampleUser.id,
           department: 'カスタマーサポート',
-          inputConditions: 'リクエスト受付済み',
-          outputResults: '内容確認完了（回答作成へ）または追加情報依頼',
+          inputConditions: '',
+          outputResults: '',
           diagramMeta: JSON.stringify({ x: 300, y: 200, color: '#4caf50', label: 'UnderReview', type: 'process' })
         }),
         State.create({
@@ -97,8 +129,8 @@ async function setupDatabase() {
           projectId: rtaProject.id,
           ownerId: sampleUser.id,
           department: 'カスタマーサポート',
-          inputConditions: '内容確認で追加情報が必要と判断',
-          outputResults: '追加情報依頼メール送信、ユーザーへ通知',
+          inputConditions: '',
+          outputResults: '',
           diagramMeta: JSON.stringify({ x: 500, y: 100, color: '#ff9800', label: 'InfoRequested', type: 'decision' })
         }),
         State.create({
@@ -107,8 +139,8 @@ async function setupDatabase() {
           projectId: rtaProject.id,
           ownerId: sampleUser.id,
           department: 'カスタマーサポート',
-          inputConditions: 'ユーザーから追加情報受領',
-          outputResults: '追加情報記録、内容再確認へ',
+          inputConditions: '',
+          outputResults: '',
           diagramMeta: JSON.stringify({ x: 700, y: 100, color: '#ffeb3b', label: 'InfoProvided', type: 'input' })
         }),
         State.create({
@@ -117,8 +149,8 @@ async function setupDatabase() {
           projectId: rtaProject.id,
           ownerId: sampleUser.id,
           department: 'カスタマーサポート',
-          inputConditions: '全情報揃い、回答作成完了',
-          outputResults: '回答通知メール送信、ユーザーへ通知',
+          inputConditions: '',
+          outputResults: '',
           diagramMeta: JSON.stringify({ x: 500, y: 300, color: '#9c27b0', label: 'Answered', type: 'output' })
         }),
         State.create({
@@ -127,14 +159,56 @@ async function setupDatabase() {
           projectId: rtaProject.id,
           ownerId: sampleUser.id,
           department: 'カスタマーサポート',
-          inputConditions: 'ユーザーが回答内容を確認',
-          outputResults: 'プロセス完了、履歴保存',
+          inputConditions: '',
+          outputResults: '',
           diagramMeta: JSON.stringify({ x: 700, y: 300, color: '#607d8b', label: 'Closed', type: 'end' })
         })
       ]);
 
       // 状態ID取得
       const [requested, underReview, infoRequested, infoProvided, answered, closed] = rtaStates;
+
+      const requestSubmitted = await ensureTerm('Request submitted');
+      const requestLogged = await ensureTerm('Request logged in system');
+      const reviewCompleted = await ensureTerm('Content review completed');
+      const additionalInfoNeeded = await ensureTerm('Additional information required');
+      const additionalInfoRequested = await ensureTerm('Additional information requested from customer');
+      const additionalInfoProvided = await ensureTerm('Additional information provided by customer');
+      const answerPrepared = await ensureTerm('Answer prepared');
+      const answerSent = await ensureTerm('Answer sent to customer');
+      const processArchived = await ensureTerm('Process archived');
+
+      await syncStateTerms(requested, {
+        inputTermIds: [requestSubmitted.id],
+        outputTermIds: [requestLogged.id]
+      });
+
+      await syncStateTerms(underReview, {
+        inputTermIds: [requestLogged.id],
+        outputTermIds: [answerPrepared.id, additionalInfoNeeded.id]
+      });
+
+      await syncStateTerms(infoRequested, {
+        inputTermIds: [additionalInfoNeeded.id],
+        outputTermIds: [additionalInfoRequested.id]
+      });
+
+      await syncStateTerms(infoProvided, {
+        inputTermIds: [additionalInfoRequested.id],
+        outputTermIds: [additionalInfoProvided.id]
+      });
+
+      await syncStateTerms(answered, {
+        inputTermIds: [additionalInfoProvided.id, answerPrepared.id],
+        outputTermIds: [answerSent.id]
+      });
+
+      await syncStateTerms(closed, {
+        inputTermIds: [answerSent.id],
+        outputTermIds: [processArchived.id]
+      });
+
+      await recalculateStateAggregations(rtaStates.map(state => state.id));
 
       // 遷移定義（BPMN図に忠実な分岐・ループ含む）
       await Promise.all([

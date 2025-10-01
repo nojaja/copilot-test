@@ -6,7 +6,7 @@
       :class="stateBtnClass"
       exact
     >
-      <i class="fas fa-list me-1"></i>
+      <i class="fas fa-list me-1" />
       State View
     </router-link>
     <router-link
@@ -15,7 +15,7 @@
       :class="matrixBtnClass"
       exact
     >
-      <i class="fas fa-table me-1"></i>
+      <i class="fas fa-table me-1" />
       Matrix View
     </router-link>
     <router-link
@@ -24,7 +24,7 @@
       :class="diagramBtnClass"
       exact
     >
-      <i class="fas fa-project-diagram me-1"></i>
+      <i class="fas fa-project-diagram me-1" />
       Diagram
     </router-link>
   </div>
